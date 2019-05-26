@@ -25,4 +25,5 @@ export default (name, defaultConfig) => {
     }
     fss.outputYaml(configFile, config |> sortKeys)
   }
+  return config
 }
