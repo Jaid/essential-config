@@ -5,6 +5,14 @@ import fss from "@absolunet/fss"
 import appdataPath from "appdata-path"
 import {difference} from "lodash"
 import sortKeys from "sort-keys"
+import jsYaml from "js-yaml"
+
+const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
+  lineWidth: 160,
+  noArrayIndent: true,
+  noCompatMode: true,
+  noRefs: true,
+})
 
 export default (name, defaultConfig) => {
   const appFolder = appdataPath(name)
@@ -12,7 +20,7 @@ export default (name, defaultConfig) => {
   fss.outputYaml(defaultConfigFile, defaultConfig)
   const configFile = path.join(appFolder, "config.yml")
   if (!fs.existsSync(configFile)) {
-    fss.outputYaml(configFile, defaultConfig |> sortKeys)
+    fss.outputFile(configFile, defaultConfig |> writeYaml, "utf8")
     return false
   }
   const config = fss.readYaml(configFile)
@@ -23,7 +31,7 @@ export default (name, defaultConfig) => {
     for (const missingKey of missingKeys) {
       config[missingKey] = defaultConfig[missingKey]
     }
-    fss.outputYaml(configFile, config |> sortKeys)
+    fss.outputFile(configFile, config |> writeYaml, "utf8")
   }
   return config
 }

@@ -6,6 +6,7 @@
     "@absolunet/fss": "^1.6.1",
     "@babel/runtime": "^7.4.5",
     "appdata-path": "^1.0.0",
+    "js-yaml": "^3.13.1",
     "sort-keys": "^3.0.0"
   },
   "devDependencies": {
