@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "dependencies": {
-    "@babel/runtime": "^7.4.5"
+    "@absolunet/fss": "^1.6.1",
+    "@babel/runtime": "^7.4.5",
+    "appdata-path": "^1.0.0"
   },
   "devDependencies": {
     "acorn": "^6.1.1",
