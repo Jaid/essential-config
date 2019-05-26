@@ -5,7 +5,8 @@
   "dependencies": {
     "@absolunet/fss": "^1.6.1",
     "@babel/runtime": "^7.4.5",
-    "appdata-path": "^1.0.0"
+    "appdata-path": "^1.0.0",
+    "sort-keys": "^3.0.0"
   },
   "devDependencies": {
     "acorn": "^6.1.1",
