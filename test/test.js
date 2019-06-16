@@ -1,7 +1,7 @@
 import path from "path"
 import fs from "fs"
 
-import appdataPath from "appdata-path"
+import appFolder from "app-folder"
 
 const indexModule = (process.env.MAIN ? path.resolve(process.env.MAIN) : path.join(__dirname, "..", "src")) |> require
 const {default: essentialConfig} = indexModule
@@ -13,11 +13,14 @@ it("should run", () => {
       color: "red",
       speed: 522,
     },
+    sonic: {
+      color: "blue",
+      speed: 9001,
+    },
+    hello: "world",
   })
-  for (const fileName of ["config.yml", "config.default.yml"]) {
-    const configFile = path.join(appdataPath(id), fileName)
-    expect(fs.existsSync(configFile)).toBeTruthy()
-    const content = fs.readFileSync(configFile, "utf8")
-    expect(content.length).toBeGreaterThan(10)
-  }
+  const configFile = path.join(appFolder(id), "config.yml")
+  expect(fs.existsSync(configFile)).toBeTruthy()
+  const content = fs.readFileSync(configFile, "utf8")
+  expect(content.length).toBeGreaterThan(10)
 })
