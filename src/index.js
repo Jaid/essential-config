@@ -35,8 +35,9 @@ export default (name, defaultConfig) => {
   const configEntries = []
   for (const key of defaultKeys |> sortBy) {
     let string = `# Option ${key}\n`
+    const value = givenKeys.includes(key) ? config[key] : defaultConfig[key]
     string += `# Default ${JSON.stringify(defaultConfig[key], null, 2).replace(/\n/gs, "\n# ")}\n`
-    string += writeYaml({[key]: defaultConfig[key]}).trim()
+    string += writeYaml({[key]: value}).trim()
     configEntries.push(string)
   }
   if (!isEmpty(configEntries)) {
