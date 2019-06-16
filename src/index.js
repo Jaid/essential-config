@@ -2,8 +2,8 @@ import path from "path"
 import fs from "fs"
 
 import fss from "@absolunet/fss"
-import appdataPath from "appdata-path"
-import {difference} from "lodash"
+import appFolder from "app-folder"
+import {difference, isArray} from "lodash"
 import sortKeys from "sort-keys"
 import jsYaml from "js-yaml"
 
@@ -15,10 +15,13 @@ const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
 })
 
 export default (name, defaultConfig) => {
-  const appFolder = appdataPath(name)
-  const defaultConfigFile = path.join(appFolder, "config.default.yml")
+  if (!isArray(name)) {
+    name = [name]
+  }
+  const configFolder = appFolder(...name)
+  const defaultConfigFile = path.join(configFolder, "config.default.yml")
   fss.outputYaml(defaultConfigFile, defaultConfig)
-  const configFile = path.join(appFolder, "config.yml")
+  const configFile = path.join(configFolder, "config.yml")
   if (!fs.existsSync(configFile)) {
     fss.outputFile(configFile, defaultConfig |> writeYaml, "utf8")
     return false
