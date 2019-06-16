@@ -3,9 +3,10 @@ import fs from "fs"
 
 import fss from "@absolunet/fss"
 import appFolder from "app-folder"
-import {difference, isArray, sortBy, isEmpty} from "lodash"
+import {difference, sortBy, isEmpty} from "lodash"
 import sortKeys from "sort-keys"
 import jsYaml from "js-yaml"
+import {ensureArray} from "magina"
 
 const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
   lineWidth: 160,
@@ -15,10 +16,7 @@ const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
 })
 
 export default (name, defaultConfig) => {
-  if (!isArray(name)) {
-    name = [name]
-  }
-  const configFolder = appFolder(...name)
+  const configFolder = appFolder(...ensureArray(name))
   const configFile = path.join(configFolder, "config.yml")
   if (!fs.existsSync(configFile)) {
     fss.outputFile(configFile, defaultConfig |> writeYaml, "utf8")
