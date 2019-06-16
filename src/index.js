@@ -18,11 +18,12 @@ const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
 export default (name, defaultConfig) => {
   const configFolder = appFolder(...ensureArray(name))
   const configFile = path.join(configFolder, "config.yml")
+  let config
   if (!fs.existsSync(configFile)) {
-    fss.outputFile(configFile, defaultConfig |> writeYaml, "utf8")
-    return false
+    config = {}
+  } else {
+    config = fss.readYaml(configFile) || {}
   }
-  const config = fss.readYaml(configFile) || {}
   const givenKeys = Object.keys(config)
   const defaultKeys = Object.keys(defaultConfig)
   const missingKeys = difference(defaultKeys, givenKeys)
@@ -53,5 +54,10 @@ export default (name, defaultConfig) => {
     yamlContent += deprecatedEntries.join("\n\n")
   }
   fss.outputFile(configFile, yamlContent, "utf8")
+  if (config |> isEmpty) {
+    return false
+  }
+  config.configFolder = configFolder
+  config.configFile = configFile
   return config
 }
