@@ -52,7 +52,7 @@ export default (name, {defaults = {}, sensitiveKeys = []}) => {
   }))
   configEntries.sensitive.entries = sensitiveKeys.map(key => ({
     key,
-    value: givenKeys.includes(key) ? config[keys] : (defaults[key] || "ENTER"),
+    value: givenKeys.includes(key) ? config[key] : (defaults[key] || "ENTER"),
     header: `Option ${key} (sensitive)`,
   }))
   configEntries.deprecated.entries = deprecatedKeys.map(key => ({
