@@ -27,8 +27,9 @@ export default (name, {defaults = {}, sensitiveKeys = []}) => {
   }
   const givenKeys = Object.keys(config)
   const defaultKeys = Object.keys(defaults)
-  const missingKeys = difference(defaultKeys, givenKeys)
-  const deprecatedKeys = difference(givenKeys, defaultKeys)
+  const neededKeys = [...defaultKeys, ...sensitiveKeys]
+  const missingKeys = difference(neededKeys, givenKeys)
+  const deprecatedKeys = difference(givenKeys, neededKeys)
   for (const missingKey of missingKeys) {
     config[missingKey] = defaults[missingKey]
   }
@@ -51,7 +52,7 @@ export default (name, {defaults = {}, sensitiveKeys = []}) => {
   }))
   configEntries.sensitive.entries = sensitiveKeys.map(key => ({
     key,
-    value: defaults[key] || "ENTER",
+    value: givenKeys.includes(key) ? config[keys] : (defaults[key] || "ENTER"),
     header: `Option ${key} (sensitive)`,
   }))
   configEntries.deprecated.entries = deprecatedKeys.map(key => ({
