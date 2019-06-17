@@ -7,6 +7,7 @@ import {difference, sortBy, isEmpty} from "lodash"
 import sortKeys from "sort-keys"
 import jsYaml from "js-yaml"
 import {ensureArray} from "magina"
+import prependToLines from "prepend-to-lines"
 
 const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
   lineWidth: 160,
@@ -15,7 +16,7 @@ const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
   noRefs: true,
 })
 
-export default (name, defaultConfig) => {
+export default (name, {defaults = {}, sensitiveKeys = []}) => {
   const configFolder = appFolder(...ensureArray(name))
   const configFile = path.join(configFolder, "config.yml")
   let config
@@ -25,40 +26,55 @@ export default (name, defaultConfig) => {
     config = fss.readYaml(configFile) || {}
   }
   const givenKeys = Object.keys(config)
-  const defaultKeys = Object.keys(defaultConfig)
+  const defaultKeys = Object.keys(defaults)
   const missingKeys = difference(defaultKeys, givenKeys)
   const deprecatedKeys = difference(givenKeys, defaultKeys)
   for (const missingKey of missingKeys) {
-    config[missingKey] = defaultConfig[missingKey]
+    config[missingKey] = defaults[missingKey]
   }
-  let yamlContent = ""
-  const configEntries = []
-  for (const key of defaultKeys |> sortBy) {
-    let string = `# Option ${key}\n`
-    const value = givenKeys.includes(key) ? config[key] : defaultConfig[key]
-    string += `# Default ${JSON.stringify(defaultConfig[key], null, 2).replace(/\n/gs, "\n# ")}\n`
-    string += writeYaml({[key]: value}).trim()
-    configEntries.push(string)
+  const configEntries = {
+    main: {
+      comment: "Configuration",
+    },
+    sensitive: {
+      comment: "Sensitive (keep secret)",
+    },
+    deprecated: {
+      comment: "Deprecated options (no longer used by app)",
+    },
   }
-  if (!isEmpty(configEntries)) {
-    yamlContent += "### Configuration\n\n"
-    yamlContent += configEntries.join("\n\n")
-  }
-  const deprecatedEntries = []
-  for (const key of deprecatedKeys |> sortBy) {
-    let string = `# Option ${key}\n`
-    string += writeYaml({[key]: config[key]}).trim()
-    deprecatedEntries.push(string)
-  }
-  if (!isEmpty(deprecatedEntries)) {
-    yamlContent += "\n\n### Deprecated options (no longer used by app)\n\n"
-    yamlContent += deprecatedEntries.join("\n\n")
-  }
-  fss.outputFile(configFile, yamlContent, "utf8")
+  const mainKeys = defaultKeys.filter(key => !sensitiveKeys.includes(key))
+  configEntries.main.entries = mainKeys.map(key => ({
+    key,
+    value: givenKeys.includes(key) ? config[key] : defaults[key],
+    header: `Option ${key}\nDefault: ${JSON.stringify(defaults[key], null, 2)}`,
+  }))
+  configEntries.sensitive.entries = sensitiveKeys.map(key => ({
+    key,
+    value: defaults[key] || "ENTER",
+    header: `Option ${key} (sensitive)`,
+  }))
+  configEntries.deprecated.entries = deprecatedKeys.map(key => ({
+    key,
+    value: config[key],
+    header: `Option ${key} (deprecated)`,
+  }))
   if (config |> isEmpty) {
-    return false
+    return {
+      config: null,
+      configFile,
+      configFolder,
+    }
   }
-  config.configFolder = configFolder
-  config.configFile = configFile
-  return config
+  const yamlContent = Object.values(configEntries).filter(({entries}) => entries.length).map(({entries, comment}) => {
+    const entriesString = sortBy(entries, "key").map(({header, value, key}) => `${prependToLines(header, "# ")}\n${{[key]: value} |> writeYaml}`).join("\n")
+    const commentLines = "#".repeat(comment.length + 6 + 2)
+    return `${commentLines}\n### ${comment} ###\n${commentLines}\n\n${entriesString}`
+  }).join("\n")
+  fss.outputFile(configFile, yamlContent, "utf8")
+  return {
+    config,
+    configFile,
+    configFolder,
+  }
 }

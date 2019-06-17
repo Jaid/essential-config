@@ -9,15 +9,19 @@ const {default: essentialConfig} = indexModule
 it("should run", () => {
   const id = `${_PKG_NAME}-test`
   essentialConfig(id, {
-    car: {
-      color: "red",
-      speed: 522,
+    defaults: {
+      car: {
+        color: "red",
+        speed: 522,
+      },
+      sonic: {
+        color: "blue",
+        speed: 9001,
+      },
+      hello: "world",
+      password: "INSERT",
     },
-    sonic: {
-      color: "blue",
-      speed: 9001,
-    },
-    hello: "world",
+    sensitiveKeys: ["password"],
   })
   const configFile = path.join(appFolder(id), "config.yml")
   expect(fs.existsSync(configFile)).toBeTruthy()
