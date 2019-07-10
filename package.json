@@ -5,10 +5,10 @@
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "dependencies": {
     "@absolunet/fss": "^1.6.1",
-    "@babel/runtime": "^7.5.2",
+    "@babel/runtime": "^7.5.4",
     "app-folder": "^1.0.0",
     "js-yaml": "^3.13.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "magina": "^1.1.0",
     "prepend-to-lines": "^1.0.0",
     "sort-keys": "^3.0.0"
