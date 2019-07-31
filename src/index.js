@@ -1,3 +1,5 @@
+/** @module essential-config */
+
 import path from "path"
 import fs from "fs"
 
