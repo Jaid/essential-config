@@ -16,6 +16,26 @@ const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
   noRefs: true,
 })
 
+/**
+ * @typedef {Object} Options
+ * @prop {Object<string, *>} defaults
+ * @prop {string[]} sensitiveKeys
+ */
+
+/**
+ * @typedef {Object} Result
+ * @prop {Object<string, *>} config
+ * @prop {string} configFolder
+ * @prop {string} configFile
+ * @prop {string[]} deprecatedKeys
+ * @prop {string[]} newKeys
+ */
+
+/**
+ * @param {string|string[]} name
+ * @param {Options} options
+ * @return {Result}
+ */
 export default (name, {defaults = {}, sensitiveKeys = []}) => {
   const configFolder = appFolder(...ensureArray(name))
   const configFile = path.join(configFolder, "config.yml")
@@ -52,7 +72,7 @@ export default (name, {defaults = {}, sensitiveKeys = []}) => {
   }))
   configEntries.sensitive.entries = sensitiveKeys.map(key => ({
     key,
-    value: givenKeys.includes(key) ? config[key] : (defaults[key] || "ENTER"),
+    value: givenKeys.includes(key) ? config[key] : defaults[key] || "ENTER",
     header: `Option ${key} (sensitive)`,
   }))
   configEntries.deprecated.entries = deprecatedKeys.map(key => ({
@@ -77,5 +97,7 @@ export default (name, {defaults = {}, sensitiveKeys = []}) => {
     config,
     configFile,
     configFolder,
+    deprecatedKeys,
+    newKeys: missingKeys,
   }
 }
