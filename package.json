@@ -5,25 +5,25 @@
   "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
   "dependencies": {
     "@absolunet/fss": "^1.6.1",
-    "@babel/runtime": "^7.5.4",
+    "@babel/runtime": "^7.5.5",
     "app-folder": "^1.0.0",
     "js-yaml": "^3.13.1",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.15",
     "magina": "^1.1.0",
     "prepend-to-lines": "^1.0.0",
     "sort-keys": "^3.0.0"
   },
   "devDependencies": {
-    "acorn": "^6.2.0",
+    "acorn": "^6.2.1",
     "babel-jest": "^24.8.0",
     "babel-preset-jaid": "6.8.2",
     "browserslist-config-jaid-node": "^2.2.1",
-    "eslint": "^6.0.1",
-    "eslint-config-jaid": "1.19.0",
+    "eslint": "^6.1.0",
+    "eslint-config-jaid": "1.26.0",
     "jest": "^24.8.0",
     "rimraf": "^2.6.3",
-    "webpack": "^4.35.3",
-    "webpack-config-jaid": "5.22.0"
+    "webpack": "^4.38.0",
+    "webpack-config-jaid": "5.23.0"
   },
   "scripts": {
     "clean": "rimraf dist/",
