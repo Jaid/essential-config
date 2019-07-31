@@ -85,6 +85,8 @@ export default (name, {defaults = {}, sensitiveKeys = []}) => {
       config: null,
       configFile,
       configFolder,
+      deprecatedKeys,
+      newKeys: missingKeys,
     }
   }
   const yamlContent = Object.values(configEntries).filter(({entries}) => entries.length).map(({entries, comment}) => {
