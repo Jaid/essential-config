@@ -19,11 +19,11 @@
     "babel-preset-jaid": "6.8.2",
     "browserslist-config-jaid-node": "^2.2.1",
     "eslint": "^6.1.0",
-    "eslint-config-jaid": "1.26.0",
+    "eslint-config-jaid": "1.28.0",
     "jest": "^24.8.0",
     "rimraf": "^2.6.3",
-    "webpack": "^4.38.0",
-    "webpack-config-jaid": "5.23.0"
+    "webpack": "^4.39.1",
+    "webpack-config-jaid": "5.24.0"
   },
   "scripts": {
     "clean": "rimraf dist/",
