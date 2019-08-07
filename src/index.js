@@ -1,107 +1,119 @@
 /** @module essential-config */
 
 import path from "path"
-import fs from "fs"
 
 import fss from "@absolunet/fss"
 import appFolder from "app-folder"
 import {difference, sortBy, isEmpty} from "lodash"
-import sortKeys from "sort-keys"
-import jsYaml from "js-yaml"
 import {ensureArray} from "magina"
 import prependToLines from "prepend-to-lines"
+import stringifyYaml from "lib/stringifyYaml"
+import json5 from "json5"
 
-const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
-  lineWidth: -1,
-  noArrayIndent: true,
-  noCompatMode: true,
-  noRefs: true,
-})
+import ConfigPlan from "./ConfigPlan"
 
 /**
  * @typedef {Object} Options
+ * @prop {Object<string, FieldDescription>} fields
  * @prop {Object<string, *>} defaults
- * @prop {string[]} sensitiveKeys
+ * @prop {string[]} secretKeys
  */
 
 /**
  * @typedef {Object} Result
  * @prop {Object<string, *>} config
  * @prop {string} configFolder
- * @prop {string} configFile
  * @prop {string[]} deprecatedKeys
  * @prop {string[]} newKeys
+ * @prop {string[]} givenKeys
+ * @prop {ConfigPlan} configPlan
  */
+
+/**
+ * @param {import("./ConfigPlan").Options} options
+ * @return {ConfigPlan}
+ */
+export const createConfigPlan = options => {
+  return new ConfigPlan(options)
+}
 
 /**
  * @param {string|string[]} name
  * @param {Options} options
  * @return {Result}
  */
-export default (name, {defaults = {}, sensitiveKeys = []}) => {
+export default (name, options) => {
+  const configPlan = createConfigPlan(options)
+  /**
+   * @type {string}
+   */
   const configFolder = appFolder(...ensureArray(name))
-  const configFile = path.join(configFolder, "config.yml")
-  let config
-  if (!fs.existsSync(configFile)) {
-    config = {}
-  } else {
-    config = fss.readYaml(configFile) || {}
-  }
-  const givenKeys = Object.keys(config)
-  const defaultKeys = Object.keys(defaults)
-  const neededKeys = [...defaultKeys, ...sensitiveKeys]
-  const missingKeys = difference(neededKeys, givenKeys)
-  const deprecatedKeys = difference(givenKeys, neededKeys)
-  for (const missingKey of missingKeys) {
-    config[missingKey] = defaults[missingKey]
-  }
-  const configEntries = {
-    main: {
-      comment: "Configuration",
+  const categories = [
+    {
+      name: "basic",
+      keys: configPlan.getNonSecretKeys(),
+      fileName: "config.yml",
     },
-    sensitive: {
-      comment: "Sensitive (keep secret)",
+    {
+      name: "secret",
+      keys: configPlan.getSecretKeys(),
+      fileName: "secrets.yml",
     },
-    deprecated: {
-      comment: "Deprecated options (no longer used by app)",
-    },
-  }
-  const mainKeys = defaultKeys.filter(key => !sensitiveKeys.includes(key))
-  configEntries.main.entries = mainKeys.map(key => ({
-    key,
-    value: givenKeys.includes(key) ? config[key] : defaults[key],
-    header: `Option ${key}\nDefault: ${JSON.stringify(defaults[key], null, 2)}`,
-  }))
-  configEntries.sensitive.entries = sensitiveKeys.map(key => ({
-    key,
-    value: givenKeys.includes(key) ? config[key] : defaults[key] || "ENTER",
-    header: `Option ${key} (sensitive)`,
-  }))
-  configEntries.deprecated.entries = deprecatedKeys.map(key => ({
-    key,
-    value: config[key],
-    header: `Option ${key} (deprecated)`,
-  }))
-  if (config |> isEmpty) {
-    return {
-      config: null,
-      configFile,
-      configFolder,
-      deprecatedKeys,
-      newKeys: missingKeys,
-    }
-  }
-  const yamlContent = Object.values(configEntries).filter(({entries}) => entries.length).map(({entries, comment}) => {
-    const entriesString = sortBy(entries, "key").map(({header, value, key}) => `${prependToLines(header, "# ")}\n${{[key]: value} |> writeYaml}`).join("\n")
-    const commentLines = "#".repeat(comment.length + 6 + 2)
-    return `${commentLines}\n### ${comment} ###\n${commentLines}\n\n${entriesString}`
-  }).join("\n")
-  fss.outputFile(configFile, yamlContent, "utf8")
-  return {
-    config,
-    configFile,
+  ]
+  const result = {
+    configPlan,
     configFolder,
-    deprecatedKeys,
-    newKeys: missingKeys,
+    config: {},
+    givenKeys: [],
+    newKeys: [],
+    deprecatedKeys: [],
   }
+  for (const {keys, fileName} of categories) {
+    if (isEmpty(keys)) {
+      continue
+    }
+    const file = path.join(configFolder, fileName)
+    const fileExists = fss.pathExists(file)
+    const config = fileExists ? fss.readYaml(file) || {} : {}
+    const givenKeys = Object.keys(config)
+    const missingKeys = difference(keys, givenKeys)
+    const deprecatedKeys = difference(givenKeys, keys)
+    for (const missingKey of missingKeys) {
+      const {defaultValue} = configPlan.fields[missingKey]
+      config[missingKey] = defaultValue || ""
+    }
+    const fileEntries = []
+    for (const key of sortBy(keys)) {
+      const field = configPlan.fields[key]
+      let header = `Option ${key}`
+      if (field.defaultValue !== undefined) {
+        header += "\nDefault: "
+        header += json5.stringify(field.defaultValue, null, 2)
+      }
+      fileEntries.push({
+        key,
+        value: config[key],
+        header,
+      })
+    }
+    for (const key of sortBy(deprecatedKeys)) {
+      const header = `Deprecated option ${key}\nThis option is no longer needed and can be safely removed.`
+      fileEntries.push({
+        key,
+        value: config[key],
+        header,
+      })
+    }
+    const yamlContent = fileEntries.map(({key, value, header}) => {
+      const yamlObject = {[key]: value}
+      const comment = prependToLines(header, "# ")
+      return `${comment}\n${stringifyYaml(yamlObject)}`
+    }).join("\n")
+    fss.outputFile(file, yamlContent, "utf8")
+    Object.assign(result.config, config)
+    Array.prototype.push.apply(result.givenKeys, givenKeys)
+    Array.prototype.push.apply(result.deprecatedKeys, deprecatedKeys)
+    Array.prototype.push.apply(result.newKeys, missingKeys)
+  }
+  return result
 }
