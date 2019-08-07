@@ -12,7 +12,7 @@ import {ensureArray} from "magina"
 import prependToLines from "prepend-to-lines"
 
 const writeYaml = config => jsYaml.safeDump(config |> sortKeys, {
-  lineWidth: 160,
+  lineWidth: -1,
   noArrayIndent: true,
   noCompatMode: true,
   noRefs: true,
