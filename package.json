@@ -39,5 +39,6 @@
     "prepareActionJest": "npm run build:prod"
   },
   "name": "essential-config",
-  "description": "Magically reads and writes config files for humans."
+  "description": "Magically reads and writes config files for humans.",
+  "funding": "https://github.com/sponsors/jaid"
 }
