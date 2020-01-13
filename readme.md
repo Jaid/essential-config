@@ -1,9 +1,9 @@
 # essential-config
 
 
-<a href="https://raw.githubusercontent.com/Jaid/essential-config/master/license.txt"><img src="https://img.shields.io/github/license/Jaid/essential-config?style=flat-square" alt="License"/></a>  
-<a href="https://actions-badge.atrox.dev/Jaid/essential-config/goto"><img src="https://img.shields.io/endpoint.svg?style=flat-square&url=https%3A%2F%2Factions-badge.atrox.dev%2FJaid%2Fessential-config%2Fbadge" alt="Build status"/></a> <a href="https://github.com/Jaid/essential-config/commits"><img src="https://img.shields.io/github/commits-since/Jaid/essential-config/v4.0.3?style=flat-square&logo=github" alt="Commits since v4.0.3"/></a> <a href="https://github.com/Jaid/essential-config/commits"><img src="https://img.shields.io/github/last-commit/Jaid/essential-config?style=flat-square&logo=github" alt="Last commit"/></a> <a href="https://github.com/Jaid/essential-config/issues"><img src="https://img.shields.io/github/issues/Jaid/essential-config?style=flat-square&logo=github" alt="Issues"/></a>  
-<a href="https://npmjs.com/package/essential-config"><img src="https://img.shields.io/npm/v/essential-config?style=flat-square&logo=npm&label=latest%20version" alt="Latest version on npm"/></a> <a href="https://github.com/Jaid/essential-config/network/dependents"><img src="https://img.shields.io/librariesio/dependents/npm/essential-config?style=flat-square&logo=npm" alt="Dependents"/></a> <a href="https://npmjs.com/package/essential-config"><img src="https://img.shields.io/npm/dm/essential-config?style=flat-square&logo=npm" alt="Downloads"/></a>
+<a href="https://raw.githubusercontent.com/jaid/essential-config/master/license.txt"><img src="https://img.shields.io/github/license/jaid/essential-config?style=flat-square" alt="License"/></a> <a href="https://github.com/sponsors/jaid"><img src="https://img.shields.io/badge/<3-Sponsor-FF45F1?style=flat-square" alt="Sponsor essential-config"/></a>
+<a href="https://actions-badge.atrox.dev/jaid/essential-config/goto"><img src="https://img.shields.io/endpoint.svg?style=flat-square&url=https%3A%2F%2Factions-badge.atrox.dev%2Fjaid%2Fessential-config%2Fbadge" alt="Build status"/></a> <a href="https://github.com/jaid/essential-config/commits"><img src="https://img.shields.io/github/commits-since/jaid/essential-config/v4.0.3?style=flat-square&logo=github" alt="Commits since v4.0.3"/></a> <a href="https://github.com/jaid/essential-config/commits"><img src="https://img.shields.io/github/last-commit/jaid/essential-config?style=flat-square&logo=github" alt="Last commit"/></a> <a href="https://github.com/jaid/essential-config/issues"><img src="https://img.shields.io/github/issues/jaid/essential-config?style=flat-square&logo=github" alt="Issues"/></a>  
+<a href="https://npmjs.com/package/essential-config"><img src="https://img.shields.io/npm/v/essential-config?style=flat-square&logo=npm&label=latest%20version" alt="Latest version on npm"/></a> <a href="https://github.com/jaid/essential-config/network/dependents"><img src="https://img.shields.io/librariesio/dependents/npm/essential-config?style=flat-square&logo=npm" alt="Dependents"/></a> <a href="https://npmjs.com/package/essential-config"><img src="https://img.shields.io/npm/dm/essential-config?style=flat-square&logo=npm" alt="Downloads"/></a>
 
 **Magically reads and writes config files for humans.**
 
@@ -37,14 +37,13 @@ yarn add essential-config@^4.0.3
 
 
 
-
 ## Development
 
 
 
 Setting up:
 ```bash
-git clone git@github.com:Jaid/essential-config.git
+git clone git@github.com:jaid/essential-config.git
 cd essential-config
 npm install
 ```
